@@ -71,6 +71,7 @@ class SingleLinkedList {
         }
 
         BasicIterator& operator++() noexcept {
+            assert(node_ != nullptr);
             node_ = node_->next_node;
             return *this;
         }
@@ -82,10 +83,12 @@ class SingleLinkedList {
         }
 
         [[nodiscard]] reference operator*() const noexcept {
+            assert(node_ != nullptr);
             return node_->value;
         }
 
         [[nodiscard]] pointer operator->() const noexcept {
+            assert(node_ != nullptr);
             return &node_->value;
         }
 
@@ -228,6 +231,7 @@ public:
      * Если при создании элемента будет выброшено исключение, список останется в прежнем состоянии
      */
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
+        assert(pos.node_ != nullptr);
         Node* new_node = pos.node_->next_node;
         pos.node_->next_node = new Node(value, new_node);
         ++size_;
@@ -238,6 +242,8 @@ public:
     * Возвращает итератор на элемент, следующий за удалённым
     */
     Iterator EraseAfter(ConstIterator pos) noexcept {
+        assert(!IsEmpty());
+        assert(pos.node_ != nullptr);
         Node* node_to_delete = pos.node_->next_node;
         pos.node_->next_node = node_to_delete->next_node;
         delete node_to_delete;
@@ -272,15 +278,15 @@ bool operator<(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& 
 
 template <typename Type>
 bool operator<=(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
-    return (lhs < rhs) || (lhs == rhs);
+    return !(rhs < lhs);
 }
 
 template <typename Type>
 bool operator>(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
-    return !(lhs < rhs);
+    return rhs < lhs;
 }
 
 template <typename Type>
 bool operator>=(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
-    return (lhs > rhs) || (lhs == rhs);
+    return !(rhs > lhs);
 }
